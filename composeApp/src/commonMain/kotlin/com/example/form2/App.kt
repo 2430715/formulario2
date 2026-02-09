@@ -1,4 +1,5 @@
 package com.example.form2
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Arrangement
@@ -32,11 +33,18 @@ import androidx.compose.material.icons.filled.MoreVert
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 fun App() {
+    // Variables de estado para los campos del formulario
     var nombre by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    
+    // Estado para manejar los mensajes emergentes (Snackbars)
     val snackbarHostState = remember { SnackbarHostState() }
+    
+    // Ámbito de corrutina para realizar operaciones asíncronas, como mostrar Snackbars
     val scope = rememberCoroutineScope()
+
     MaterialTheme {
+        // Estructura base de la pantalla con soporte para barra superior y snackbars
         Scaffold(
             snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             topBar = {
@@ -45,10 +53,15 @@ fun App() {
                 )
             }
         ) { paddingValues ->
+            // Contenedor principal con orientación vertical
             Column(
-                modifier = Modifier.padding(paddingValues).fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Campo de entrada para el nombre
                 OutlinedTextField(
                     value = nombre,
                     onValueChange = { nombre = it },
@@ -56,7 +69,10 @@ fun App() {
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
+                
                 Spacer(modifier = Modifier.height(16.dp))
+                
+                // Campo de entrada para el correo electrónico
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -64,24 +80,34 @@ fun App() {
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
+                
                 Spacer(modifier = Modifier.height(16.dp))
+                
+                // Botón para "guardar" la información ingresada
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
+                        // Lanza una corrutina para mostrar el mensaje de confirmación
                         scope.launch {
-                            snackbarHostState.showSnackbar("Guardado: $nombre ($email)")
+                            snackbarHostState.showSnackbar("Registrado: $nombre ($email)")
                         }
                     }
                 ) {
                     Text("Guardar")
                 }
+                
                 Spacer(modifier = Modifier.height(32.dp))
+                
+                // Título de la lista de usuarios
                 Text(
                     text = "Usuarios registrados:",
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.fillMaxWidth()
                 )
+                
                 Spacer(modifier = Modifier.height(8.dp))
+                
+                // Lista simulada de usuarios
                 val usuariosSimulados = listOf(
                     "Juan Pérez - juan@ejemplo.com",
                     "María García - maria@ejemplo.com",
@@ -89,15 +115,18 @@ fun App() {
                     "Ana Martínez - ana@ejemplo.com",
                     "Luis Rodríguez - luis@ejemplo.com"
                 )
+                
+                // Lista optimizada que solo renderiza los elementos visibles
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(usuariosSimulados) { usuario ->
+                        // Tarjeta para cada elemento de la lista
                         Card(
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            // Cambia a 'true' para ver el menú abierto en el Preview
+                            // Estado local para controlar si el menú desplegable está abierto
                             var menuExpandido by remember { mutableStateOf(false) }
                             
                             Row(
@@ -110,6 +139,8 @@ fun App() {
                                     modifier = Modifier.padding(16.dp),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
+                                
+                                // Contenedor para el botón de opciones y el menú
                                 Box {
                                     IconButton(onClick = { menuExpandido = true }) {
                                         Icon(
@@ -117,6 +148,8 @@ fun App() {
                                             contentDescription = "Opciones"
                                         )
                                     }
+                                    
+                                    // Menú desplegable con opciones de Editar y Eliminar
                                     DropdownMenu(
                                         expanded = menuExpandido,
                                         onDismissRequest = { menuExpandido = false }
